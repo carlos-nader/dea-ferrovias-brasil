@@ -1,0 +1,15 @@
+# Dados brutos (não versionados)
+data/*.xlsx
+data/*.xls
+data/*.pdf
+data/*.csv
+
+# Ambiente R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# OS
+.DS_Store
+Thumbs.db
