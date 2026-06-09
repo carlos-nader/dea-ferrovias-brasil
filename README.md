@@ -32,7 +32,7 @@ output/     Resultados gerados pelos scripts (CSVs e plots)
 
 1. Clone o repositório
 2. Baixe os arquivos de dados conforme `data/README.md`
-3. Instale R (r-project.org) e os pacotes necessários:
+3. Instale R >= 4.6.0 (r-project.org) e os pacotes necessários:
    ```r
    install.packages(c("rbcb", "readxl", "dplyr", "ggplot2", "Benchmarking"))
    ```
