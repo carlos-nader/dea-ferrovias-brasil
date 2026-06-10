@@ -7,7 +7,6 @@ data/**/*.png
 data/**/*.pbix
 
 # Exceções — dados públicos versionados
-!data/ipca_anual.csv
 !data/ipca_mensal.csv
 !data/**/df_*_receita.csv
 

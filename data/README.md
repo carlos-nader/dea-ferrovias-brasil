@@ -7,12 +7,11 @@ Exceções versionadas: `ipca_anual.csv`, `ipca_mensal.csv` e `df_[sigla]_receit
 ## Deflator — IPCA (versionado)
 
 Fonte: Banco Central do Brasil · SGS série 433 (IPCA variação % mensal, IBGE)
-Gerado por: `R/00_download_ipca.R` · Cobertura: **2008–2024**
+Gerado por: `R/00_download_ipca.R` · Cobertura: **2012–2025**
 
 | Arquivo            | Conteúdo                                              |
 |--------------------|-------------------------------------------------------|
-| `ipca_mensal.csv`  | Variação % mensal e índice acumulado (base jan/2008)  |
-| `ipca_anual.csv`   | Variação acumulada anual (%) e índice médio anual     |
+| `ipca_mensal.csv`  | Variação % mensal e índice acumulado (base jan/2012)  |
 
 Metodologia e decisões: ver `docs/00_download_ipca.md`.
 

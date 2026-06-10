@@ -11,58 +11,39 @@ Banco Central do Brasil — SGS (Sistema Gerenciador de Séries Temporais)
 Série **433**: IPCA variação % mensal, divulgada pelo IBGE.
 Acesso via pacote R `rbcb` (função `get_series`).
 
-Cobertura: janeiro/2008 a dezembro/2024 (alinhada ao período das Demonstrações Financeiras).
+Cobertura: janeiro/2012 a dezembro/2025 (alinhada ao período dos dados SIREF).
 
 ---
 
 ## Índice mensal acumulado
 
-Base: **janeiro/2008 = 100**.
+Base: **janeiro/2012 = 100**.
 
-A partir das variações mensais, constrói-se um índice de preços contínuo:
-
-```text
-indice(t) = 100 × ∏(1 + ipca_k/100) / (1 + ipca_jan2008/100)
-             para k = jan/2008 até t
-```
-
-Salvo em `ipca_mensal.csv` para permitir auditoria do cálculo anual.
-
----
-
-## Índice médio anual (deflator)
-
-Para deflacionar receita anual (variável de fluxo), o deflator correto é o
-**nível médio de preços do ano**, não a variação acumulada de dezembro a dezembro.
-A receita anual representa transações distribuídas ao longo dos 12 meses; usar
-o índice de dezembro subestimaria a inflação efetiva do período.
+Janeiro/2012 é o primeiro mês da série de receita de frete (SIREF) e o ponto de
+partida da análise. A partir das variações mensais, constrói-se um índice contínuo
+por composição:
 
 ```text
-indice_medio(ano) = média dos 12 valores mensais do índice naquele ano
+indice(jan/2012) = 100
+indice(t)        = indice(t-1) × (1 + ipca(t) / 100)
 ```
 
-Deflação aplicada no script `01_correlacao_tku_receita.R`:
+Para deflacionar a receita nominal do mês t a preços de jan/2012:
 
 ```r
-receita_real = receita_nominal × (indice_medio_2008 / indice_medio_ano)
+receita_real(t) = receita_nominal(t) / (indice(t) / 100)
 ```
+
+Salvo em `ipca_mensal.csv`.
 
 ---
 
-## Estrutura dos CSVs
+## Estrutura do CSV
 
 **`ipca_mensal.csv`**
 
-| Coluna           | Tipo      | Descrição                                  |
-|------------------|-----------|--------------------------------------------|
-| `date`           | data      | Primeiro dia do mês de referência          |
-| `ipca_mensal_pct`| numérico  | Variação % mensal do IPCA                  |
-| `indice`         | numérico  | Índice acumulado (base jan/2008 = 100)     |
-
-**`ipca_anual.csv`**
-
-| Coluna          | Tipo      | Descrição                                       |
-|-----------------|-----------|-------------------------------------------------|
-| `ano`           | inteiro   | Ano de referência                               |
-| `ipca_acum_pct` | numérico  | Variação acumulada anual % (dez a dez)          |
-| `indice_medio`  | numérico  | Média dos índices mensais do ano (base 2008=100)|
+| Coluna            | Tipo     | Descrição                              |
+|-------------------|----------|----------------------------------------|
+| `date`            | data     | Primeiro dia do mês de referência      |
+| `ipca_mensal_pct` | numérico | Variação % mensal do IPCA              |
+| `indice`          | numérico | Índice acumulado (base jan/2012 = 100) |
