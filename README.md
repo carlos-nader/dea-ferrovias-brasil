@@ -21,7 +21,7 @@ Como evoluiu a eficiência produtiva das concessionárias ferroviárias brasilei
 
 ## Estrutura do repositório
 
-```
+```text
 R/          Scripts de análise (numerados por etapa)
 docs/       Documentação metodológica de cada script
 data/       Dados brutos (não versionados — ver data/README.md)
@@ -33,10 +33,34 @@ output/     Resultados gerados pelos scripts (CSVs e plots)
 1. Clone o repositório
 2. Baixe os arquivos de dados conforme `data/README.md`
 3. Instale R >= 4.6.0 (r-project.org) e os pacotes necessários:
+
    ```r
    install.packages(c("rbcb", "readxl", "dplyr", "ggplot2", "Benchmarking"))
    ```
+
 4. Execute os scripts em `R/` na ordem numérica
+
+## Concessionárias Ferroviárias Federais
+
+| Sigla | Nome | Uso no TCC |
+| ----- | ---- | ---------- |
+| EFC | Estrada de Ferro Carajás | DMU |
+| EFVM | Estrada de Ferro Vitória a Minas | DMU |
+| FCA | Ferrovia Centro-Atlântica | DMU |
+| FTC | Ferrovia Tereza Cristina | DMU |
+| FTL | Ferrovia Transnordestina (ex-CFN) | DMU |
+| MRS | MRS Logística | DMU |
+| RMN | Rumo Malha Norte | DMU |
+| RMO | Rumo Malha Oeste | DMU |
+| RMP | Rumo Malha Paulista | DMU |
+| RMS | Rumo Malha Sul | DMU |
+| FNS | Ferrovia Norte-Sul | Excluída* |
+| RMC | Rumo Malha Central | Excluída* |
+| TLSA | Ferrovia Transnordestina Logística | Excluída** |
+| BAFER | Bahia Ferrovias | Excluída** |
+
+\* Iniciou operações após 2006 — fora do período de análise.
+\** Ferrovia em obras — sem operação comercial.
 
 ## Referências principais
 
