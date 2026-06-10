@@ -46,6 +46,7 @@ output/     Resultados gerados pelos scripts (CSVs e plots)
 | ----- | ---- | ---------- |
 | EFC | Estrada de Ferro Carajás | DMU |
 | EFVM | Estrada de Ferro Vitória a Minas | DMU |
+| EFPO | Ferroeste (Estrada de Ferro Paraná Oeste) | DMU |
 | FCA | Ferrovia Centro-Atlântica | DMU |
 | FTC | Ferrovia Tereza Cristina | DMU |
 | FTL | Ferrovia Transnordestina (ex-CFN) | DMU |
