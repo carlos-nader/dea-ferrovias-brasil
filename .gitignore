@@ -4,6 +4,7 @@ data/**/*.xls
 data/**/*.pdf
 data/**/*.csv
 data/**/*.png
+data/**/*.pbix
 
 # Exceções — dados públicos versionados
 !data/ipca_anual.csv
