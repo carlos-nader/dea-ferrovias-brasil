@@ -10,7 +10,7 @@ Orientadora: Profa. Dra. Maisa Sales Gama Tobias (UFPA/ITEC)
 
 ## Problema de pesquisa
 
-Como evoluiu a eficiência produtiva das concessionárias ferroviárias brasileiras de carga entre 2006 e 2024?
+Como evoluiu a eficiência produtiva das concessionárias ferroviárias brasileiras de carga entre 2006 e 2025?
 
 ## Metodologia
 
