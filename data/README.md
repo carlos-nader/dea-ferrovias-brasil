@@ -29,11 +29,13 @@ Fonte: https://www.gov.br/antt/pt-br/assuntos/ferrovias/concessoes-ferroviarias/
 Cobertura disponível: **2008–2024** (2025 pendente de publicação) · Padrão IFRS
 Variável de interesse: receita operacional líquida de frete (DRE)
 
-## Convenção de nomenclatura
+## Estrutura de pastas
 
-Sugestão de nomes para os arquivos locais:
+Cada concessionária tem seu próprio subdiretório:
 
-```
-anuario_[concessionaria]_[ano].xlsx    ex: anuario_mrs_2024.xlsx
-df_[concessionaria]_[ano].xlsx         ex: df_mrs_2024.xlsx
+```text
+data/
+└── [sigla]/
+    ├── anuario_[sigla]_[ano].xlsx    ex: anuario_mrs_2025.xlsx
+    └── df_[sigla]_[ano].pdf          ex: df_mrs_2024.pdf
 ```
