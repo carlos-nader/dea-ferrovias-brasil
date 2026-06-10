@@ -1,7 +1,20 @@
 # data/
 
-Os arquivos desta pasta não estão versionados no repositório.
-Para reproduzir as análises, baixe os arquivos abaixo e salve aqui.
+A maioria dos arquivos desta pasta não está versionada no repositório.
+Para reproduzir as análises, baixe os arquivos indicados abaixo e salve aqui.
+Exceções versionadas: `ipca_anual.csv`, `ipca_mensal.csv` e `df_[sigla]_receita.csv`.
+
+## Deflator — IPCA (versionado)
+
+Fonte: Banco Central do Brasil · SGS série 433 (IPCA variação % mensal, IBGE)
+Gerado por: `R/00_download_ipca.R` · Cobertura: **2008–2024**
+
+| Arquivo            | Conteúdo                                              |
+|--------------------|-------------------------------------------------------|
+| `ipca_mensal.csv`  | Variação % mensal e índice acumulado (base jan/2008)  |
+| `ipca_anual.csv`   | Variação acumulada anual (%) e índice médio anual     |
+
+Metodologia e decisões: ver `docs/00_download_ipca.md`.
 
 ## Anuário Estatístico ANTT
 
@@ -36,12 +49,12 @@ Estrutura, unidade e decisões metodológicas: ver `docs/01_correlacao_tku_recei
 
 ## Estrutura de pastas
 
-Cada concessionária tem seu próprio subdiretório:
-
 ```text
 data/
+├── ipca_mensal.csv               (versionado)
+├── ipca_anual.csv                (versionado)
 └── [sigla]/
     ├── anuario_[sigla]_[ano].xlsx    ex: anuario_mrs_2025.xlsx
     ├── df_[sigla]_[ano].pdf          ex: df_mrs_2024.pdf
-    └── df_[sigla]_receita.csv        ex: df_mrs_receita.csv
+    └── df_[sigla]_receita.csv        ex: df_mrs_receita.csv (versionado)
 ```
