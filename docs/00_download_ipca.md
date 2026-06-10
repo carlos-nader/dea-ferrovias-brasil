@@ -21,7 +21,7 @@ Base: **janeiro/2008 = 100**.
 
 A partir das variações mensais, constrói-se um índice de preços contínuo:
 
-```
+```text
 indice(t) = 100 × ∏(1 + ipca_k/100) / (1 + ipca_jan2008/100)
              para k = jan/2008 até t
 ```
@@ -37,7 +37,7 @@ Para deflacionar receita anual (variável de fluxo), o deflator correto é o
 A receita anual representa transações distribuídas ao longo dos 12 meses; usar
 o índice de dezembro subestimaria a inflação efetiva do período.
 
-```
+```text
 indice_medio(ano) = média dos 12 valores mensais do índice naquele ano
 ```
 
@@ -53,16 +53,16 @@ receita_real = receita_nominal × (indice_medio_2008 / indice_medio_ano)
 
 **`ipca_mensal.csv`**
 
-| Coluna           | Tipo    | Descrição                                  |
-|------------------|---------|--------------------------------------------|
-| `date`           | date    | Primeiro dia do mês de referência          |
-| `ipca_mensal_pct`| numeric | Variação % mensal do IPCA                  |
-| `indice`         | numeric | Índice acumulado (base jan/2008 = 100)     |
+| Coluna           | Tipo      | Descrição                                  |
+|------------------|-----------|--------------------------------------------|
+| `date`           | data      | Primeiro dia do mês de referência          |
+| `ipca_mensal_pct`| numérico  | Variação % mensal do IPCA                  |
+| `indice`         | numérico  | Índice acumulado (base jan/2008 = 100)     |
 
 **`ipca_anual.csv`**
 
-| Coluna          | Tipo    | Descrição                                       |
-|-----------------|---------|-------------------------------------------------|
-| `ano`           | integer | Ano de referência                               |
-| `ipca_acum_pct` | numeric | Variação acumulada anual % (dez a dez)          |
-| `indice_medio`  | numeric | Média dos índices mensais do ano (base 2008=100)|
+| Coluna          | Tipo      | Descrição                                       |
+|-----------------|-----------|-------------------------------------------------|
+| `ano`           | inteiro   | Ano de referência                               |
+| `ipca_acum_pct` | numérico  | Variação acumulada anual % (dez a dez)          |
+| `indice_medio`  | numérico  | Média dos índices mensais do ano (base 2008=100)|
