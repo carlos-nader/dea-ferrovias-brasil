@@ -7,6 +7,8 @@ Para reproduzir as análises, baixe os arquivos abaixo e salve aqui.
 
 Fonte: https://www.gov.br/antt/pt-br/assuntos/ferrovias/anuario-estatistico-ferroviario
 
+Cobertura disponível: **2006–2025**
+
 Baixar os arquivos Excel anuais de cada concessionária. Tabelas utilizadas:
 
 | Tabela | Variável |
@@ -24,7 +26,7 @@ Baixar os arquivos Excel anuais de cada concessionária. Tabelas utilizadas:
 
 Fonte: https://www.gov.br/antt/pt-br/assuntos/ferrovias/concessoes-ferroviarias/[nome-concessao]/demostracoes-financeiras
 
-Cobertura: 2008–2024 · Padrão IFRS
+Cobertura disponível: **2008–2024** (2025 pendente de publicação) · Padrão IFRS
 Variável de interesse: receita operacional líquida de frete (DRE)
 
 ## Convenção de nomenclatura
