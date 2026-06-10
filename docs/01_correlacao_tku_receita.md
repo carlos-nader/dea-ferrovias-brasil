@@ -102,22 +102,36 @@ Outputs gerados:
 
 ## Limitação identificada — composição da receita operacional bruta
 
-A receita operacional bruta das concessionárias ferroviárias é composta por:
+A receita operacional bruta das concessionárias ferroviárias, conforme o manual de
+contabilidade da ANTT (Sistema 3 — Receitas, Grupo 3.1), agrega as seguintes contas:
 
-- **Receita de frete** — diretamente associada ao transporte de carga, output do
-  serviço medido pelos inputs do DEA (locomotivas, vagões, trem-km)
-- **Receita de serviços acessórios** — carregamento, descarregamento, manobras etc.;
-  serviços complementares que não dependem exclusivamente dos ativos modelados como
-  inputs
+- **3.1.1 Receita dos Serviços de Transporte de Carga** — receita direta de transporte;
+  associada aos inputs operacionais modelados no DEA
+- **3.1.2 Receita dos Serviços de Transporte de Passageiros** — irrelevante para as
+  DMUs de carga
+- **3.1.3 Receita de Tráfego Mútuo (TM)** — receita de outra ferrovia que utiliza os
+  trilhos da concessionária; não reflete produção própria
+- **3.1.4 Receita de Direito de Passagem (DP)** — idem; receita de terceiros
+  transitando na malha própria
+- **3.1.5 Receitas Acessórias de Transporte** — carregamento, descarregamento,
+  manobras etc.; não diretamente associadas aos inputs modelados
+- **3.1.7 Receita de Venda de Capacidade Instalada** — receita de concessão de
+  capacidade a operadores ferroviários independentes (OFIs) que efetivamente vendem
+  o serviço de transporte ao cliente final; economicamente equivalente a 3.1.1 para
+  concessionárias que operam nesse modelo
 
-A receita alternativa (aluguéis, consultorias etc.) é categoria separada e não integra
-a receita operacional bruta.
+A conta 3.1.6 (Receitas Alternativas) foi descontinuada (D3) e não integra a ROB atual.
 
-As Demonstrações Financeiras não apresentam a separação entre frete e acessório de
-forma consistente entre concessionárias e ao longo dos anos: alguns DFs detalham as
-duas rubricas separadamente; outros apresentam apenas o total operacional. Extrair
-apenas a receita de frete exigiria o uso dos balancetes mensais da ANTT, que contêm
-a abertura por conta contábil.
+A variável utilizada neste script — extraída das notas explicativas às DFs — agrega
+todas as contas acima sem distinção. Portanto, a ROB inclui TM (3.1.3) e DP (3.1.4),
+que são receitas de terceiros e não guardam relação direta com os inputs operacionais
+do DEA. A poluição é mais ampla do que a simples presença de serviços acessórios.
+
+A variável metodologicamente correta para o DEA é **3.1.1 + 3.1.7**, que captura
+toda a receita efetiva de transporte de carga, independente do modelo operacional
+(operação direta ou venda de capacidade a OFIs). Extrair essa composição exige os
+balancetes mensais encaminhados pelas concessionárias à ANTT (sistema SIREF), que
+contêm a abertura por conta contábil.
 
 Incluir receita operacional bruta como output do DEA introduz uma variável
 parcialmente desconectada dos inputs, comprometendo a consistência do modelo.
