@@ -24,10 +24,12 @@ Baixar os arquivos Excel anuais de cada concessionária. Tabelas utilizadas:
 
 ## Demonstrações Financeiras das Concessionárias
 
-Fonte: <https://www.gov.br/antt/pt-br/assuntos/ferrovias/concessoes-ferroviarias/[nome-concessao]/demostracoes-financeiras>
+Fonte: <https://www.gov.br/antt/pt-br/assuntos/ferrovias/concessoes-ferroviarias>
+(Para cada concessionária, acessar a pasta correspondente → Demonstrações Financeiras)
 
 Cobertura disponível: **2008–2024** (2025 pendente de publicação) · Padrão IFRS
-Variável de interesse: receita operacional bruta (DRE)
+Variável de interesse: receita operacional bruta extraída das notas explicativas às
+demonstrações financeiras encaminhadas à ANTT.
 
 Dados extraídos manualmente e salvos como `df_[sigla]_receita.csv` por concessionária.
 Estrutura, unidade e decisões metodológicas: ver `docs/01_correlacao_tku_receita.md`.

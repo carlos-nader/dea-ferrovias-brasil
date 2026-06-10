@@ -4,6 +4,10 @@ data/**/*.xls
 data/**/*.pdf
 data/**/*.csv
 
+# Exceções — dados públicos versionados
+!data/ipca_anual.csv
+!data/**/df_*_receita.csv
+
 # Ambiente R
 .Rhistory
 .RData
