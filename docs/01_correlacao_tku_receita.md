@@ -18,6 +18,27 @@ condicionada à decisão metodológica descrita na seção de limitações.
 
 ---
 
+## Método
+
+### Correlação de Pearson — e não regressão
+
+A relação entre TKU e receita é **simétrica**: nenhuma das variáveis é dependente da
+outra no sentido causal. O objetivo é verificar se as duas medem a mesma dimensão do
+desempenho (redundância), não estimar um efeito ou fazer previsão. A regressão impõe
+uma assimetria (variável dependente × independente) que não existe aqui. O coeficiente
+de Pearson r mede a associação linear sem pressupor direcionalidade, sendo o
+instrumento correto para o teste de redundância.
+
+### Limiar r > 0,90
+
+Critério usual na literatura de DEA para identificar outputs redundantes: se r > 0,90,
+as duas variáveis capturam essencialmente a mesma informação e incluir ambas no modelo
+não acrescenta poder discriminatório — podendo até distorcer os scores por colinearidade.
+Abaixo desse limiar, as variáveis medem dimensões distintas do desempenho e a inclusão
+de ambas é metodologicamente justificada.
+
+---
+
 ## Dados utilizados
 
 ### TKU
