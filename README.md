@@ -1,7 +1,7 @@
 # dea-ferrovias-brasil
 
 **Evolução da Eficiência Produtiva das Concessionárias Ferroviárias Brasileiras de Carga**
-Análise Envoltória de Dados (DEA) · Período 2006–2024
+Análise Envoltória de Dados (DEA) · Período 2006–2025
 
 TCC — Especialização em Engenharia Ferroviária · UFPA
 Orientadora: Profa. Dra. Maisa Sales Gama Tobias (UFPA/ITEC)
