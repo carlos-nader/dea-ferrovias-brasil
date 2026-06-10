@@ -61,11 +61,11 @@ Valores convertidos para R$ constantes de 2008.
 
 ## Resultado
 
-| Estatística | Valor  |
-|-------------|--------|
-| Método      | Pearson |
+| Estatística | Valor           |
+|-------------|-----------------|
+| Método      | Pearson         |
 | Período     | 2008–2024 (MRS) |
-| r           | **0,3156** |
+| r           | **0,3156**      |
 
 Correlação fraca: r ≤ 0,90. Pela regra definida, a receita adiciona informação
 ao TKU e deveria ser incluída no DEA, restringindo o período a 2008–2024.
@@ -88,14 +88,15 @@ A receita operacional bruta das concessionárias ferroviárias é composta por:
 - **Receita de serviços acessórios** — carregamento, descarregamento, manobras etc.;
   serviços complementares que não dependem exclusivamente dos ativos modelados como
   inputs
-- **Receita alternativa** — aluguéis, consultorias etc.; sem relação com a operação
-  ferroviária direta
 
-As Demonstrações Financeiras não apresentam essa separação de forma consistente entre
-concessionárias e ao longo dos anos: alguns DFs detalham frete e acessório
-separadamente; outros apresentam apenas o total operacional. Extrair apenas a receita
-de frete exigiria o uso dos balancetes mensais da ANTT, que contêm a abertura por
-conta contábil.
+A receita alternativa (aluguéis, consultorias etc.) é categoria separada e não integra
+a receita operacional bruta.
+
+As Demonstrações Financeiras não apresentam a separação entre frete e acessório de
+forma consistente entre concessionárias e ao longo dos anos: alguns DFs detalham as
+duas rubricas separadamente; outros apresentam apenas o total operacional. Extrair
+apenas a receita de frete exigiria o uso dos balancetes mensais da ANTT, que contêm
+a abertura por conta contábil.
 
 Incluir receita operacional bruta como output do DEA introduz uma variável
 parcialmente desconectada dos inputs, comprometendo a consistência do modelo.
@@ -108,8 +109,9 @@ Discutir com a orientadora (Profa. Dra. Maisa Sales Gama Tobias) e com o Prof.
 Gildemir Ferreira da Silva:
 
 1. **Descartar receita** — usar apenas TKU; período 2006–2025; modelo DEA mais limpo
-2. **Extrair receita de frete via balancetes** — metodologicamente ideal, mas exige
-   levantamento adicional de dados para 10 DMUs × 17 anos
+2. **Extrair receita de frete via balancetes** — metodologicamente ideal, pois os
+   balancetes contêm abertura por conta contábil; porém os dados encaminhados pelas
+   concessionárias à ANTT não são públicos (acesso a avaliar)
 3. **Manter receita operacional bruta** — aceitar a limitação explicitamente na
    metodologia do TCC
 
