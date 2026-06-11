@@ -98,11 +98,34 @@ O r poolado (0,91) supera o limiar de 0,90. Apesar de refletir principalmente a
 diferença de escala entre DMUs grandes e pequenas — não uma correlação mensal
 forte dentro de cada concessionária, houve uma dispersão entre as concessionárias. Ou seja, há concessionárias com coeficiente de correlação baixo e outras com coeficiente de correlação acima de 0,9.
 
+### EFC e EFVM — demonstrações financeiras *Carve-out*
+
+As DFs da EFVM e da EFC no SIREF são **demonstrações financeiras *Carve-out***,
+elaboradas a partir das demonstrações consolidadas da Vale S.A. (controladora de
+ambas as ferrovias), pois ambas as ferrovias não são entidades com personalidades jurídicas próprias:
+
+> *"[...] Dessa forma, essas demonstrações financeiras
+> Carve-out não são necessariamente um indicativo do desempenho de suas operações,
+> que poderiam ter existido, caso a Ferrovia tivesse operado como uma entidade
+> jurídica independente durante o exercício apresentado."*
+
+A receita registrada no SIREF para essas duas DMUs é uma **alocação contábil
+intragrupo**.
+
+A **EFVM** é o caso mais problemático: seu índice de correlaçao de pearson foi negativo no período analisado, de 2012 a 2025 (r = −0,047).
+A EFC apresenta r positivo (0,671), mas a natureza *Carve-out* da receita persiste.
+
 ### Avaliação da receita como output
 
-Modelar DMUs
-com uma variável de receita que se comporta de forma distinta
-entre elas comprometeria a comparabilidade dos scores DEA.
+Modelar DMUs com uma variável de receita que se comporta de forma distinta entre
+elas comprometeria a comparabilidade dos scores DEA. O argumento é reforçado
+pela natureza *Carve-out* da receita de EFC e EFVM: mesmo que os dados fossem
+estatisticamente coerentes, a receita dessas DMUs não seria comparável à receita
+autônoma das demais concessionárias.
+
+A inconsistência da EFVM em particular — r negativo, ajustes contábeis de grande
+magnitude em dezembro de múltiplos anos, e TKU declinante com receita crescente
+— torna a variável inviável como output nessa DMU especificamente.
 
 **Conclusão provável:** a receita de frete não será utilizada como output.
 O modelo DEA usará apenas TKU, cobrindo o período 2006–2025 com 11 DMUs
