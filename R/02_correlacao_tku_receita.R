@@ -1,80 +1,132 @@
-library(readxl)
 library(dplyr)
 library(ggplot2)
 
-# --- TKU (Anuário ANTT, aba 2.1.2) ---
-tku_raw <- read_excel(
-  "data/MRS/anuario_mrs_2025.xlsx",
-  sheet    = "2.1.2",
-  skip     = 2,
-  col_names = TRUE
+# ── 1. IPCA ──────────────────────────────────────────────────────────────────
+ipca <- read.csv("data/ipca_mensal.csv") |>
+  mutate(
+    ano = as.integer(format(as.Date(date), "%Y")),
+    mes = as.integer(format(as.Date(date), "%m"))
+  ) |>
+  select(ano, mes, indice)
+
+# ── 2. DMUs ──────────────────────────────────────────────────────────────────
+dmus <- list(
+  list(sigla = "EFC",       pasta = "data/EFC"),
+  list(sigla = "EFVM",      pasta = "data/EFVM"),
+  list(sigla = "FERROESTE", pasta = "data/FERROESTE"),
+  list(sigla = "FCA",       pasta = "data/FCA"),
+  list(sigla = "FNS",       pasta = "data/FNS"),
+  list(sigla = "FTC",       pasta = "data/FTC"),
+  list(sigla = "FTL",       pasta = "data/FTL"),
+  list(sigla = "MRS",       pasta = "data/MRS"),
+  list(sigla = "RMN",       pasta = "data/RMN"),
+  list(sigla = "RMO",       pasta = "data/RMO"),
+  list(sigla = "RMP",       pasta = "data/RMP"),
+  list(sigla = "RMS",       pasta = "data/RMS")
 )
 
-tku <- tku_raw |>
-  select(ano = 1, tku = 2) |>
-  mutate(ano = suppressWarnings(as.integer(ano))) |>
-  filter(!is.na(ano), ano >= 2008, ano <= 2024)
+dir.create("output/02_correlacao_tku_receita",
+           recursive = TRUE, showWarnings = FALSE)
 
-# --- Receita bruta (notas explicativas às DFs encaminhadas à ANTT) ---
-# Unidade: R$ mil (valores nominais)
-receita <- read.csv("data/MRS/df_mrs_receita.csv")
+# ── 3. Loop por DMU ──────────────────────────────────────────────────────────
+resultados <- list()
 
-# --- Deflator (IPCA índice médio anual, base jan/2008 = 100) ---
-ipca <- read.csv("data/ipca_anual.csv")
-indice_base <- ipca$indice_medio[ipca$ano == 2008]
+for (dmu in dmus) {
+  s <- tolower(dmu$sigla)
 
-# --- Merge e deflação ---
-df <- tku |>
-  left_join(receita, by = "ano") |>
-  left_join(ipca |> select(ano, indice_medio), by = "ano") |>
-  mutate(
-    receita_real = receita_bruta * (indice_base / indice_medio),
-    tku_milhoes  = tku / 1e6
+  tku <- read.csv(file.path(dmu$pasta, paste0(s, "_tku_mensal.csv")))
+
+  receita <- read.csv(
+    file.path(dmu$pasta, paste0(s, "_receita_siref.csv"))
+  ) |>
+    group_by(ano, mes) |>
+    summarise(receita_nominal = sum(receita_rs), .groups = "drop")
+
+  df <- tku |>
+    inner_join(receita, by = c("ano", "mes")) |>
+    inner_join(ipca,    by = c("ano", "mes")) |>
+    mutate(
+      receita_real = receita_nominal / (indice / 100),
+      data         = as.Date(sprintf("%d-%02d-01", ano, mes))
+    ) |>
+    arrange(data) |>
+    mutate(dmu = dmu$sigla)
+
+  r <- cor(df$tku, df$receita_real, method = "pearson", use = "complete.obs")
+  cat(sprintf("%-12s r = %.4f  (%d obs)\n", dmu$sigla, r, nrow(df)))
+
+  resultados[[dmu$sigla]] <- list(df = df, r = r)
+
+  # -- Plot dual-eixo --
+  sf <- max(df$receita_real, na.rm = TRUE) / max(df$tku, na.rm = TRUE)
+
+  p <- ggplot(df, aes(x = data)) +
+    geom_line(aes(y = tku * sf,    color = "TKU"),         linewidth = 0.7) +
+    geom_line(aes(y = receita_real, color = "Receita real"), linewidth = 0.7) +
+    scale_y_continuous(
+      name   = "Receita real (R$ bilhões, base jan/2012)",
+      labels = function(x) sprintf("%.1f", x / 1e9),
+      sec.axis = sec_axis(
+        ~ . / sf,
+        name   = "TKU (bilhões)",
+        labels = function(x) sprintf("%.1f", x / 1e9)
+      )
+    ) +
+    scale_color_manual(
+      values = c("TKU" = "#2166ac", "Receita real" = "#d6604d")
+    ) +
+    scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+    labs(
+      title    = sprintf("%s — TKU e Receita Real (2012–2025)",
+                         dmu$sigla),
+      subtitle = sprintf(
+        "Receita deflacionada pelo IPCA (base: jan/2012)  |  r = %.4f", r
+      ),
+      x = NULL, color = NULL
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "bottom")
+
+  ggsave(
+    sprintf("output/02_correlacao_tku_receita/plot_%s.png", s),
+    plot = p, width = 10, height = 5, dpi = 150
   )
-
-# --- Correlação de Pearson ---
-r <- cor(df$tku, df$receita_real, method = "pearson")
-
-cat(sprintf("\nCorrelação de Pearson — MRS (2008–2024)\n"))
-cat(sprintf("TKU × receita operacional bruta deflacionada\n"))
-cat(sprintf("r = %.4f\n\n", r))
-
-if (abs(r) > 0.90) {
-  cat("r > 0,90: receita é redundante em relação ao TKU.\n")
-  cat("Decisão: usar apenas TKU como proxy de output (período 2006–2025).\n")
-} else {
-  cat("r <= 0,90: receita adiciona informação ao TKU.\n")
-  cat("Decisão: incluir receita no DEA (período 2008–2024).\n")
 }
 
-# --- Tabela de resultados ---
+# ── 4. Poolado ───────────────────────────────────────────────────────────────
+dados_todos <- bind_rows(lapply(resultados, function(x) x$df))
+
+r_poolado <- cor(dados_todos$tku, dados_todos$receita_real,
+                 method = "pearson", use = "complete.obs")
+cat(sprintf("%-12s r = %.4f  (%d obs)\n", "POOLADO", r_poolado,
+            nrow(dados_todos)))
+
+# ── 5. Tabela mensal completa ─────────────────────────────────────────────────
+tabela <- dados_todos |>
+  select(dmu, ano, mes, tku, receita_nominal, indice, receita_real) |>
+  arrange(dmu, ano, mes)
+
+write.csv(tabela,
+          "output/02_correlacao_tku_receita/dados_mensais.csv",
+          row.names = FALSE)
+
+# ── 6. Tabela de correlações ──────────────────────────────────────────────────
+corr_tab <- bind_rows(
+  lapply(names(resultados), function(nm) {
+    data.frame(
+      dmu       = nm,
+      r_pearson = resultados[[nm]]$r,
+      n_obs     = nrow(resultados[[nm]]$df)
+    )
+  }),
+  data.frame(dmu = "POOLADO", r_pearson = r_poolado,
+             n_obs = nrow(dados_todos))
+)
+
+write.csv(corr_tab,
+          "output/02_correlacao_tku_receita/correlacoes.csv",
+          row.names = FALSE)
+
 cat("\n")
-print(df |> select(ano, tku_milhoes, receita_bruta, indice_medio, receita_real))
-
-# --- Salvar resultados ---
-dir.create("output/01_correlacao_tku_receita", recursive = TRUE, showWarnings = FALSE)
-
-write.csv(
-  df |> select(ano, tku, tku_milhoes, receita_bruta, indice_medio, receita_real),
-  "output/01_correlacao_tku_receita/df_correlacao_mrs.csv",
-  row.names = FALSE
-)
-
-# --- Scatter plot ---
-p <- ggplot(df, aes(x = tku_milhoes, y = receita_real / 1e6)) +
-  geom_point(size = 3) +
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "gray40") +
-  geom_text(aes(label = ano), vjust = -0.8, size = 3) +
-  labs(
-    title = sprintf("TKU × Receita real — MRS (2008–2024)  |  r = %.4f", r),
-    x     = "TKU (milhões)",
-    y     = "Receita bruta real (R$ milhões, base 2008)"
-  ) +
-  theme_minimal()
-
-ggsave(
-  "output/01_correlacao_tku_receita/plot_correlacao_mrs.png",
-  plot = p, width = 8, height = 5, dpi = 150
-)
-
-cat("\nResultados salvos em output/01_correlacao_tku_receita/\n")
+print(corr_tab, row.names = FALSE)
+cat("\nResultados salvos em output/02_correlacao_tku_receita/\n")

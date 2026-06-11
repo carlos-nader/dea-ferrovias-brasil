@@ -3,19 +3,23 @@
 Resultados gerados pelos scripts em `R/`. Uma subpasta por script, seguindo o
 mesmo prefixo numérico.
 
-Os arquivos desta pasta são versionados no repositório.
+## Versionamento
+
+Nem todos os outputs são versionados. Subpastas que contenham dados derivados
+de fontes não públicas (ex.: SIREF) estão no `.gitignore` e ficam apenas
+localmente.
 
 ## Estrutura
 
 ```text
 output/
 └── [NN]_[nome-do-script]/
-    ├── df_*.csv      Tabelas de resultados
-    └── plot_*.png    Gráficos
+    ├── *.csv      Tabelas de resultados
+    └── *.png      Gráficos
 ```
 
 ## Conteúdo atual
 
-| Pasta                         | Script de origem                    | Conteúdo |
-|-------------------------------|-------------------------------------|----------|
-| `01_correlacao_tku_receita/`  | `R/01_correlacao_tku_receita.R`     | Correlação Pearson TKU × receita real — MRS (2008–2024) |
+| Pasta                        | Script de origem                | Versionado | Conteúdo                                                             |
+|------------------------------|---------------------------------|:----------:|----------------------------------------------------------------------|
+| `02_correlacao_tku_receita/` | `R/02_correlacao_tku_receita.R` | Não        | Plots TKU × receita real por DMU; tabela mensal; correlações Pearson |

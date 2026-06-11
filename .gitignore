@@ -10,6 +10,9 @@ data/**/*.pbix
 !data/ipca_mensal.csv
 !data/**/df_*_receita.csv
 
+# Outputs com dados de receita não públicos (SIREF)
+output/02_correlacao_tku_receita/
+
 # Ambiente R
 .Rhistory
 .RData

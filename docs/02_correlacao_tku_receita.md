@@ -1,20 +1,20 @@
-# 01 — Correlação TKU × Receita
+# 02 — Correlação TKU × Receita
 
-Script: `R/01_correlacao_tku_receita.R`
-Output: `output/01_correlacao_tku_receita/`
+Script: `R/02_correlacao_tku_receita.R`
+Output: `output/02_correlacao_tku_receita/`
 
 ---
 
 ## Objetivo
 
-Testar se TKU (Tonelada-Quilômetro Útil) e receita operacional bruta são variáveis
-redundantes para fins de DEA. Critério: se r > 0,90 (Pearson), a receita é descartada
-e o período de análise permanece 2006–2025 (apenas TKU). Se r ≤ 0,90, a receita
-adiciona informação e deve ser considerada como variável de output, restringindo o
-período a 2008–2024 (disponibilidade das Demonstrações Financeiras).
+Testar se TKU (Tonelada-Quilômetro Útil) e receita de frete são variáveis
+redundantes para fins de DEA. Critério: se r > 0,90 (Pearson), a receita é
+descartada e o período de análise permanece 2006–2025 (apenas TKU). Se r ≤ 0,90,
+a receita adiciona informação e deve ser considerada como variável de output,
+restringindo o período a 2012–2025 (disponibilidade do SIREF).
 
-Teste realizado com dados da MRS Logística. Aplicação às demais DMUs fica
-condicionada à decisão metodológica descrita na seção de limitações.
+Teste realizado para todas as 12 DMUs candidatas, individualmente e em painel
+poolado.
 
 ---
 
@@ -22,20 +22,20 @@ condicionada à decisão metodológica descrita na seção de limitações.
 
 ### Correlação de Pearson — e não regressão
 
-A relação entre TKU e receita é **simétrica**: nenhuma das variáveis é dependente da
-outra no sentido causal. O objetivo é verificar se as duas medem a mesma dimensão do
-desempenho (redundância), não estimar um efeito ou fazer previsão. A regressão impõe
-uma assimetria (variável dependente × independente) que não existe aqui. O coeficiente
-de Pearson r mede a associação linear sem pressupor direcionalidade, sendo o
-instrumento correto para o teste de redundância.
+A relação entre TKU e receita é **simétrica**: nenhuma das variáveis é dependente
+da outra no sentido causal. O objetivo é verificar se as duas medem a mesma
+dimensão do desempenho (redundância), não estimar um efeito ou fazer previsão.
+A regressão impõe uma assimetria (variável dependente × independente) que não
+existe aqui. O coeficiente de Pearson r mede a associação linear sem pressupor
+direcionalidade, sendo o instrumento correto para o teste de redundância.
 
 ### Limiar r > 0,90
 
-Critério usual na literatura de DEA para identificar outputs redundantes: se r > 0,90,
-as duas variáveis capturam essencialmente a mesma informação e incluir ambas no modelo
-não acrescenta poder discriminatório — podendo até distorcer os scores por colinearidade.
-Abaixo desse limiar, as variáveis medem dimensões distintas do desempenho e a inclusão
-de ambas é metodologicamente justificada.
+Critério usual na literatura de DEA para identificar outputs redundantes: se
+r > 0,90, as duas variáveis capturam essencialmente a mesma informação e incluir
+ambas no modelo não acrescenta poder discriminatório — podendo até distorcer os
+scores por colinearidade. Abaixo desse limiar, as variáveis medem dimensões
+distintas do desempenho e a inclusão de ambas é metodologicamente justificada.
 
 ---
 
@@ -43,112 +43,83 @@ de ambas é metodologicamente justificada.
 
 ### TKU
 
-- Fonte: Anuário Estatístico ANTT
-- Arquivo: `data/MRS/anuario_mrs_2025.xlsx`, aba `2.1.2`, coluna `Total`
-- Período: 2008–2024
+- Fonte: Anuário Estatístico ANTT, aba `2.1.2`
+- Arquivos: `data/<DMU>/<dmu>_tku_mensal.csv` (gerados por `R/01_extrair_tku_mensal.R`)
+- Período: janeiro/2012 a dezembro/2025 (168 meses por DMU)
 - Unidade: TKU (valor absoluto)
 
-### Receita operacional bruta
+### Receita de frete
 
-- Fonte: notas explicativas às demonstrações financeiras encaminhadas à ANTT
-- Acesso: <https://www.gov.br/antt/pt-br/assuntos/ferrovias/concessoes-ferroviarias>
-  (pasta de cada concessionária → Demonstrações Financeiras)
-- Arquivo: `data/MRS/df_mrs_receita.csv` (extração manual, 2008–2024)
-- Unidade: R$ mil (valores nominais)
-- Padrão contábil: IFRS
+- Fonte: SIREF (Sistema de Informações Regulatórias Ferroviárias — ANTT)
+- Contas: **3.1.1** (Receita dos Serviços de Transporte de Carga) +
+  **3.1.7** (Receita de Venda de Capacidade Instalada — OFIs), quando presentes
+- Arquivos: `data/<DMU>/<dmu>_receita_siref.csv`
+- Período: janeiro/2012 a dezembro/2025 (168 meses por DMU)
+- Unidade: R$ correntes
+
+A composição 3.1.1 + 3.1.7 captura toda a receita efetiva de transporte de
+carga, independente do modelo operacional (operação direta ou concessão de
+capacidade a OFIs), excluindo tráfego mútuo (3.1.3), direito de passagem (3.1.4)
+e receitas acessórias (3.1.5).
+
+**Nota sobre a FTL:** a série de receita combina TLSA (jan/2012 a dez/2012 e
+parte de 2013) + FTL (2013–2025), refletindo a cisão da CFN em 2013. A série
+TKU do Anuário trata a concessão como unidade contínua sob a sigla FTL.
 
 ### Deflator
 
 - Fonte: BCB SGS série 433 (IPCA variação % mensal, IBGE)
-- Arquivo: `data/ipca_anual.csv` (gerado por `R/00_download_ipca.R`)
-- Índice utilizado: índice médio anual (base jan/2008 = 100)
+- Arquivo: `data/ipca_mensal.csv` (gerado por `R/00_download_ipca.R`)
+- Base: **janeiro/2012 = 100**
 - Metodologia: ver `docs/00_download_ipca.md`
 
 ---
 
 ## Deflação
 
-Para deflacionar a receita nominal (variável de fluxo anual), aplica-se o índice
-médio anual do IPCA — nível médio de preços do ano, não a variação acumulada de
-dezembro a dezembro:
+A receita nominal de cada mês t é convertida a preços de janeiro/2012:
 
 ```text
-receita_real = receita_bruta × (indice_medio_2008 / indice_medio_ano)
+receita_real(t) = receita_nominal(t) / (indice(t) / 100)
 ```
 
-Valores convertidos para R$ constantes de 2008.
+---
+
+## Resultados
+
+Período: janeiro/2012 a dezembro/2025 — 168 observações mensais por DMU.
+
+| Estatística    | Valor  |
+|----------------|-------:|
+| r poolado      | 0,9074 |
+| n (observações)| 2.016  |
+
+O r poolado (0,91) supera o limiar de 0,90. Apesar de refletir principalmente a
+diferença de escala entre DMUs grandes e pequenas — não uma correlação mensal
+forte dentro de cada concessionária, houve uma dispersão entre as concessionárias. Ou seja, há concessionárias com coeficiente de correlação baixo e outras com coeficiente de correlação acima de 0,9.
+
+### Avaliação da receita como output
+
+Modelar DMUs
+com uma variável de receita que se comporta de forma distinta
+entre elas comprometeria a comparabilidade dos scores DEA.
+
+**Conclusão provável:** a receita de frete não será utilizada como output.
+O modelo DEA usará apenas TKU, cobrindo o período 2006–2025 com 11 DMUs
+(excluindo FNS, sem dados de TKU anteriores a 2012). Decisão a confirmar
+com a orientadora e com o Prof. Gildemir.
 
 ---
 
-## Resultado
+## Próximo passo
 
-| Estatística | Valor           |
-|-------------|-----------------|
-| Método      | Pearson         |
-| Período     | 2008–2024 (MRS) |
-| r           | **0,3156**      |
+Confirmar com a orientadora (Profa. Maisa) e com o Prof. Gildemir a exclusão
+da receita como output, com base na dispersão dos r individuais e na
+inconsistência da variável entre concessionárias. Aprovada a exclusão,
+a especificação do modelo DEA fica definida:
 
-Correlação fraca: r ≤ 0,90. Pela regra definida, a receita adiciona informação
-ao TKU e deveria ser incluída no DEA, restringindo o período a 2008–2024.
+- **Output:** TKU (único)
+- **Período:** 2006–2025
+- **DMUs:** 11 (EFC, EFVM, FERROESTE, FCA, FTC, FTL, MRS, RMN, RMO, RMP, RMS)
 
-Outputs gerados:
-
-- `output/01_correlacao_tku_receita/df_correlacao_mrs.csv` — tabela com TKU,
-  receita nominal, deflator e receita real por ano
-- `output/01_correlacao_tku_receita/plot_correlacao_mrs.png` — dispersão TKU ×
-  receita real com reta de regressão
-
----
-
-## Limitação identificada — composição da receita operacional bruta
-
-A receita operacional bruta das concessionárias ferroviárias, conforme o manual de
-contabilidade da ANTT (Sistema 3 — Receitas, Grupo 3.1), agrega as seguintes contas:
-
-- **3.1.1 Receita dos Serviços de Transporte de Carga** — receita direta de transporte;
-  associada aos inputs operacionais modelados no DEA
-- **3.1.2 Receita dos Serviços de Transporte de Passageiros** — irrelevante para as
-  DMUs de carga
-- **3.1.3 Receita de Tráfego Mútuo (TM)** — receita de outra ferrovia que utiliza os
-  trilhos da concessionária; não reflete produção própria
-- **3.1.4 Receita de Direito de Passagem (DP)** — idem; receita de terceiros
-  transitando na malha própria
-- **3.1.5 Receitas Acessórias de Transporte** — carregamento, descarregamento,
-  manobras etc.; não diretamente associadas aos inputs modelados
-- **3.1.7 Receita de Venda de Capacidade Instalada** — receita de concessão de
-  capacidade a operadores ferroviários independentes (OFIs) que efetivamente vendem
-  o serviço de transporte ao cliente final; economicamente equivalente a 3.1.1 para
-  concessionárias que operam nesse modelo
-
-A conta 3.1.6 (Receitas Alternativas) foi descontinuada (D3) e não integra a ROB atual.
-
-A variável utilizada neste script — extraída das notas explicativas às DFs — agrega
-todas as contas acima sem distinção. Portanto, a ROB inclui TM (3.1.3) e DP (3.1.4),
-que são receitas de terceiros e não guardam relação direta com os inputs operacionais
-do DEA. A poluição é mais ampla do que a simples presença de serviços acessórios.
-
-A variável metodologicamente correta para o DEA é **3.1.1 + 3.1.7**, que captura
-toda a receita efetiva de transporte de carga, independente do modelo operacional
-(operação direta ou venda de capacidade a OFIs). Extrair essa composição exige os
-balancetes mensais encaminhados pelas concessionárias à ANTT (sistema SIREF), que
-contêm a abertura por conta contábil.
-
-Incluir receita operacional bruta como output do DEA introduz uma variável
-parcialmente desconectada dos inputs, comprometendo a consistência do modelo.
-
----
-
-## Decisão pendente
-
-Discutir com a orientadora (Profa. Dra. Maisa Sales Gama Tobias) e com o Prof.
-Gildemir Ferreira da Silva:
-
-1. **Descartar receita** — usar apenas TKU; período 2006–2025; modelo DEA mais limpo
-2. **Extrair receita de frete via balancetes** — metodologicamente ideal, pois os
-   balancetes contêm abertura por conta contábil; porém os dados encaminhados pelas
-   concessionárias à ANTT não são públicos (acesso a avaliar)
-3. **Manter receita operacional bruta** — aceitar a limitação explicitamente na
-   metodologia do TCC
-
-O teste com a MRS permanece no repositório como registro do processo de decisão
-metodológica, independentemente da conclusão.
+Essa definição desbloqueia a redação do projeto de pesquisa (prazo: 31/07/2026).
