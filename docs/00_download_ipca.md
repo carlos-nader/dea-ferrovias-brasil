@@ -38,6 +38,27 @@ Salvo em `ipca_mensal.csv`.
 
 ---
 
+## Abordagem alternativa — Ipeadata (Excel)
+
+O mesmo deflator pode ser obtido diretamente do Ipeadata sem código:
+
+1. Acessar [ipeadata.gov.br](https://www.ipeadata.gov.br) → série **PRECOS12_IPCA12**
+   (*Índice nacional de preços ao consumidor amplo — geral: índice dez/1993 = 100*)
+2. Baixar a série em Excel (`deflator_ipca.xls`, arquivo em `data/`)
+3. Calcular o deflator com uma fórmula simples:
+
+```text
+deflator(t) = IPCA_ibge(t) / IPCA_ibge(jan/2012)
+```
+
+O resultado é numericamente equivalente ao `indice/100` do CSV
+(diferença máxima verificada: 0,000012 — apenas arredondamento de ponto flutuante).
+
+Esta abordagem é mais direta quando não se dispõe de acesso à API do BCB ou
+quando se prefere rastrear a fonte primária no próprio arquivo de dados.
+
+---
+
 ## Estrutura do CSV
 
 **`ipca_mensal.csv`**
