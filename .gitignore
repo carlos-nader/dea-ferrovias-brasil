@@ -8,7 +8,7 @@ data/**/*.pbix
 
 # Exceções — dados públicos versionados
 !data/ipca_mensal.csv
-!data/**/df_*_receita.csv
+!data/**/*_tku_mensal.csv
 
 # Outputs com dados de receita não públicos (SIREF)
 output/02_correlacao_tku_receita/
