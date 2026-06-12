@@ -29,6 +29,23 @@ Como evoluiu a eficiência produtiva das concessionárias ferroviárias brasilei
 | **DMUs** | 11 concessionárias federais de carga (ver tabela abaixo) |
 | **Período** | 2006–2025 · painel poolado (220 observações) |
 
+## Especificação do 2º estágio — Tobit
+
+Variáveis explicativas candidatas dos scores DEA (todas disponíveis no Anuário ANTT).
+Devem ser distintas dos inputs DEA para evitar endogeneidade.
+Para o Tobit, serão agregadas à frequência anual dos scores DEA.
+
+| Variável | Tabela | Frequência no Anuário |
+| -------- | ------ | --------------------- |
+| Velocidade Média Comercial (VMC) | 2.3.1 | anual |
+| Índice de acidentes | 2.2.1 | anual |
+| Disponibilidade de locomotivas (%) | 2.4.2 | anual |
+| Disponibilidade de vagões (%) | 2.5.2 | anual |
+| Percurso médio por locomotiva (km) | 2.4.5 | mensal |
+| Percurso médio por vagão (km) | 2.5.3 | mensal |
+
+Especificação final a confirmar com a orientadora. O 2º estágio responde: *o que explica as diferenças de eficiência entre concessionárias?*
+
 ## Estrutura do repositório
 
 ```text
