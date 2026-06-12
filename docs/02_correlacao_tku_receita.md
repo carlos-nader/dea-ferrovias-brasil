@@ -127,22 +127,20 @@ A inconsistência da EFVM em particular — r negativo, ajustes contábeis de gr
 magnitude em dezembro de múltiplos anos, e TKU declinante com receita crescente
 — torna a variável inviável como output nessa DMU especificamente.
 
-**Conclusão provável:** a receita de frete não será utilizada como output.
+**Conclusão (confirmada):** a receita de frete não será utilizada como output.
 O modelo DEA usará apenas TKU, cobrindo o período 2006–2025 com 11 DMUs
-(excluindo FNS, sem dados de TKU anteriores a 2012). Decisão a confirmar
-com a orientadora e com o Prof. Gildemir.
+(excluindo FNS, sem dados de TKU anteriores a 2012).
 
 ---
 
-## Próximo passo
+## Resultado
 
-Confirmar com a orientadora (Profa. Maisa) e com o Prof. Gildemir a exclusão
-da receita como output, com base na dispersão dos r individuais e na
-inconsistência da variável entre concessionárias. Aprovada a exclusão,
-a especificação do modelo DEA fica definida:
+A exclusão da receita como output está confirmada. A especificação parcial do
+modelo DEA decorrente deste teste:
 
 - **Output:** TKU (único)
 - **Período:** 2006–2025
-- **DMUs:** 11 (EFC, EFVM, FERROESTE, FCA, FTC, FTL, MRS, RMN, RMO, RMP, RMS)
+- **DMUs:** 11 (EFC, EFVM, EFPO, FCA, FTC, FTL, MRS, RMN, RMO, RMP, RMS)
 
-Essa definição desbloqueia a redação do projeto de pesquisa (prazo: 31/07/2026).
+A definição dos inputs permanece em aberto — a confirmar com a orientadora
+após testes de correlação entre as variáveis candidatas.

@@ -17,7 +17,17 @@ Como evoluiu a eficiência produtiva das concessionárias ferroviárias brasilei
 - Modelos DEA CCR e BCC (output-oriented)
 - Índice de Malmquist (evolução temporal)
 - Bootstrap (Simar & Wilson 1998) para intervalos de confiança
+- Tobit (2º estágio — variáveis explicativas dos scores)
 - Software: R · pacote `Benchmarking` (Bogetoft & Otto 2011)
+
+## Especificação do modelo DEA
+
+| Elemento | Definição |
+| -------- | --------- |
+| **Output** | TKU — Tonelada-Quilômetro Útil (Tab 2.1.2 do Anuário ANTT) |
+| **Inputs** | Em definição — a confirmar com orientadora após testes de correlação |
+| **DMUs** | 11 concessionárias federais de carga (ver tabela abaixo) |
+| **Período** | 2006–2025 · painel poolado (220 observações) |
 
 ## Estrutura do repositório
 
@@ -35,7 +45,7 @@ output/     Resultados gerados pelos scripts (CSVs e plots)
 3. Instale R >= 4.6.0 (r-project.org) e os pacotes necessários:
 
    ```r
-   install.packages(c("rbcb", "readxl", "dplyr", "ggplot2", "Benchmarking"))
+   install.packages(c("rbcb", "readxl", "dplyr", "ggplot2", "Benchmarking", "AER"))
    ```
 
 4. Execute os scripts em `R/` na ordem numérica

@@ -21,18 +21,19 @@ Fonte: <https://www.gov.br/antt/pt-br/assuntos/ferrovias/anuario-estatistico-fer
 
 Cobertura disponível: **2006–2025**
 
-Baixar os arquivos Excel anuais de cada concessionária. Tabelas utilizadas:
+Baixar os arquivos Excel anuais de cada concessionária. Tabelas referenciadas:
 
-| Tabela | Variável                                     |
-|--------|----------------------------------------------|
-| 2.1.1  | TU — Toneladas úteis transportadas           |
-| 2.1.2  | TKU — Toneladas-quilômetro úteis             |
-| 2.3.3  | Trem-quilômetro                              |
-| 2.4.1  | Locomotivas em circulação                    |
-| 2.4.2  | Disponibilidade e utilização de locomotivas  |
-| 2.4.5  | Consumo de combustível (CCL)                 |
-| 2.5.1  | Vagões em circulação                         |
-| 2.5.2  | Disponibilidade e utilização de vagões       |
+| Tabela | Variável | Papel no modelo |
+| ------ | -------- | --------------- |
+| 2.1.2  | TKU — Toneladas-quilômetro úteis (mensal) | Output confirmado |
+| 2.4.1  | Locomotivas em circulação (contagem absoluta, mensal) | Input candidato |
+| 2.5.1  | Vagões em circulação (contagem absoluta, mensal) | Input candidato |
+| 2.4.3  | Consumo de combustível — L/mil TKU (mensal) | Input candidato (CCL = Tab 2.4.3 × TKU / 1.000) |
+| 2.3.4  | NTF — Trens formados (contagem, mensal) | Input candidato |
+| 2.4.2  | Disponibilidade e utilização de locomotivas (anual) | 2º estágio (Tobit) |
+| 2.5.2  | Disponibilidade e utilização de vagões (anual) | 2º estágio (Tobit) |
+
+Inputs a confirmar com orientadora após testes de correlação entre variáveis candidatas.
 
 ## Demonstrações Financeiras das Concessionárias
 
@@ -40,11 +41,9 @@ Fonte: <https://www.gov.br/antt/pt-br/assuntos/ferrovias/concessoes-ferroviarias
 (Para cada concessionária, acessar a pasta correspondente → Demonstrações Financeiras)
 
 Cobertura disponível: **2008–2024** (2025 pendente de publicação) · Padrão IFRS
-Variável de interesse: receita operacional bruta extraída das notas explicativas às
-demonstrações financeiras encaminhadas à ANTT.
 
-Dados extraídos manualmente e salvos como `df_[sigla]_receita.csv` por concessionária.
-Estrutura, unidade e decisões metodológicas: ver `docs/01_correlacao_tku_receita.md`.
+Utilizadas no teste de redundância TKU × receita (ver `docs/02_correlacao_tku_receita.md`).
+**Receita não será utilizada como output do DEA** — ver conclusão em `docs/02_correlacao_tku_receita.md`.
 
 ## Estrutura de pastas
 
