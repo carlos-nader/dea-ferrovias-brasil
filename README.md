@@ -25,7 +25,7 @@ Como evoluiu a eficiência produtiva das concessionárias ferroviárias brasilei
 | Elemento | Definição |
 | -------- | --------- |
 | **Output** | TKU — Tonelada-Quilômetro Útil (Tab 2.1.2 do Anuário ANTT) |
-| **Inputs** | Em definição — a confirmar com orientadora após testes de correlação |
+| **Inputs** | Candidatos: locomotivas em circulação (Tab 2.4.1) · vagões em circulação (Tab 2.5.1) · consumo de combustível/CCL (Tab 2.4.3) · trens formados/NTF (Tab 2.3.4) — a confirmar com orientadora após testes de correlação |
 | **DMUs** | 11 concessionárias federais de carga (ver tabela abaixo) |
 | **Período** | 2006–2025 · painel poolado (220 observações) |
 
