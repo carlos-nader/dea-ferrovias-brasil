@@ -41,8 +41,8 @@ Para o Tobit, serão agregadas à frequência anual dos scores DEA.
 | Índice de acidentes | 2.2.1 | anual |
 | Disponibilidade de locomotivas (%) | 2.4.2 | anual |
 | Disponibilidade de vagões (%) | 2.5.2 | anual |
-| Percurso médio por locomotiva (km) | 2.4.5 | mensal |
-| Percurso médio por vagão (km) | 2.5.3 | mensal |
+| Percurso médio por locomotiva (km) | 2.4.5 | anual |
+| Percurso médio por vagão (km) | 2.5.3 | anual |
 
 Especificação final a confirmar com a orientadora. O 2º estágio responde: *o que explica as diferenças de eficiência entre concessionárias?*
 
