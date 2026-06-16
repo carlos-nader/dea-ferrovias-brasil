@@ -9,6 +9,10 @@ data/**/*.pbix
 # Exceções — dados públicos versionados
 !data/ipca_mensal.csv
 !data/**/*_tku_mensal.csv
+!data/inputs_candidatos.csv
+
+# Scripts R da raiz (geração/compilação — não versionar)
+/*.R
 
 # Outputs com dados de receita não públicos (SIREF)
 output/02_correlacao_tku_receita/
