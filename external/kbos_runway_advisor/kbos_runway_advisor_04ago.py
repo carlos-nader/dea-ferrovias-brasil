@@ -392,6 +392,39 @@ RUNWAY_PREF_NOTES = {
 # every other config was checked for the same class of defect and none has it.
 LAHSO_JET_EXCLUSION = {("SW", "Visual"): ["27"]}
 
+# Step 6 / Pendencia 7, added 2026-08-06. DUAL ARRIVAL cases (CSPR, DCIA/CRDA,
+# converging) deliberately excluded - Tower!Simulator 3's AI TRACON sequences
+# every arrival invisibly until the pilot calls "with you" (per-game docs), so
+# no arrival-separation fact here ever changes what the player does. Only
+# TOWER-side facts remain: departure clearance, hold-short, landing clearance
+# on a runway that still has traffic.
+PARALLEL_RUNWAY_PAIRS = [
+    {"4L", "4R"}, {"22L", "22R"}, {"15R", "15L"}, {"33L", "33R"},
+]
+
+# Non-parallel, non-crossing departure pairs where JO 7110.65 par. 5-8-3 item 11
+# geometry is affirmable by logic alone (KBOS_achados.md, "Atualizacao de
+# 29/07/2026", achado 3/Q6) - genuinely simultaneous by the rule, real-world use
+# never confirmed.
+SIMULTANEOUS_DEPARTURE_PAIRS = [{"9", "4L"}, {"9", "14"}]
+
+# The 2 physical crossings with NO published LAHSO point (Section 11 of the
+# rules doc, closing paragraph) - not a general geometry scan, these are the
+# only 2 KBOS ever documented this way.
+GENERIC_CROSSINGS = [("9", "4R"), ("33L", "27")]
+
+# FAA NTAP LAHSO, Boston-Logan. Asymmetric on purpose - reconfirmed against the
+# source 2026-08-06: 15R and 27 hold short for ONE specific runway; 4L and 22L
+# hold short for EITHER end of the physical strip they cross. Do not collapse
+# into one generic rule - the 4 rows are 4 different real triggers.
+LAHSO_HOLD_SHORT = [
+    # (holding runway, crossed runway label for display, trigger runway set)
+    ("4L", "15L-33R", {"15L", "33R"}),
+    ("15R", "9-27", {"9"}),
+    ("22L", "9-27", {"9", "27"}),
+    ("27", "4R-22L", {"22L"}),
+]
+
 # ---------------------------------------------------------------------------
 # Why a runway is closed to jets - the short tag for the table's Reason column
 # (added 2026-08-03). Deliberately 2-3 words: the full reasoning stays in
@@ -1399,6 +1432,8 @@ def evaluate(hour, minute, wind_dir, wind_speed, gust,
         "wind_readout": None,
         "reasons": [],
         "night_notes": [],
+        "paired_ops": [],   # STEP 6 (Pendencia 7) - list of (tag, label,
+                            # confidence, text), same shape as ALWAYS_ON
         "minima_notes": [],     # published-approach-minima caution, informational only
         "minima_flagged": set(),  # runway ids flagged - structured, for assertions
         "wind_notes": [],       # per-runway 8400.9 wind check, informational only
@@ -1614,6 +1649,7 @@ def evaluate(hour, minute, wind_dir, wind_speed, gust,
         _wind_limit_step(result, wind_dir, eff_speed, steady_speed,
                          tailwind_limit, crosswind_limit, gust_in_use)
         _eligibility_step(result, night_block)
+        _paired_runway_operations_step(result)
         return result
 
     # -----------------------------------------------------------------
@@ -1718,6 +1754,7 @@ def evaluate(hour, minute, wind_dir, wind_speed, gust,
                 result, wind_dir, eff_speed, steady_speed, tailwind_limit,
                 crosswind_limit, gust_in_use)
             _eligibility_step(result, night_block)
+            _paired_runway_operations_step(result)
             return result
         else:
             exceeded = []
@@ -2048,6 +2085,7 @@ def evaluate(hour, minute, wind_dir, wind_speed, gust,
     result["departures"] = _fmt(result["dep_rwys"], dep_suffix)
 
     _eligibility_step(result, night_block, arr_suffix, dep_suffix)
+    _paired_runway_operations_step(result)
     return result
 
 
@@ -2532,6 +2570,107 @@ def _eligibility_step(result, night_block, arr_suffix="", dep_suffix=""):
     result["eligibility"].append((TABLE_FOOTER_POINTER, "muted"))
 
 
+def _paired_runway_operations_step(result):
+    """STEP 6 (Pendencia 7) - simultaneous/paired runway operations, informational
+    only, never changes the configuration above it. Reads the SAME filtered lists
+    RUNWAY ELIGIBILITY's table reads (_usable_now), not the raw documented package -
+    otherwise this section could describe a pair where one runway was already
+    excluded by wind, contradicting the table right above it (the same class of
+    defect _usable_now was built in 2026-08-04 to prevent elsewhere).
+
+    DUAL ARRIVAL cases (CSPR, DCIA/CRDA, converging approaches) are OUT OF SCOPE
+    by design (user decision, 2026-08-06): Tower! Simulator 3's AI TRACON handles
+    arrival sequencing invisibly until the pilot calls "with you", so no arrival-
+    separation mechanism fact here ever changes a player action.
+    """
+    if result["arr_rwys"] is None:
+        result["paired_ops"].append((None, None, "", NO_CONFIG_MESSAGE))
+        return
+
+    arr, dep = _usable_now(result)
+    arr_set, dep_set = set(arr), set(dep)
+    used = arr_set | dep_set
+
+    result["paired_ops"].append((
+        "muted", None, "",
+        "No PRM on any parallel pair (JO 7110.308E / FAA PRM training)."))
+
+    # DUAL DEPARTURE - parallel pair, both runways departing. Not truly
+    # simultaneous (zero heading divergence), so it is timed separation, not a
+    # special authorization.
+    for pair in PARALLEL_RUNWAY_PAIRS:
+        if pair <= dep_set:
+            a, b = sorted(pair)
+            result["paired_ops"].append((
+                "rt_noise", "DUAL DEPARTURE", OFFICIAL,
+                f"{a} + {b}: departures are time-separated, 2-3 min by weight "
+                "category (JO 7110.65 par. 3-9-6)."))
+
+    # SIMULTANEOUS DEPARTURE - the one case that IS genuinely simultaneous by
+    # the rule (divergence >= 15 deg). Printed once even if somehow both pairs
+    # matched, matching the single combined sentence already approved.
+    if any(pair <= dep_set for pair in SIMULTANEOUS_DEPARTURE_PAIRS):
+        result["paired_ops"].append((
+            "rt_noise", "SIMULTANEOUS DEPARTURE", OFFICIAL,
+            "9 + 4L / 9 + 14: geometry allows it, real-world use unknown "
+            "(JO 7110.65 par. 5-8-3 item 11)."))
+
+    # MIXED - one runway of a parallel pair landing, the other departing.
+    for pair in PARALLEL_RUNWAY_PAIRS:
+        a_arr = pair & arr_set
+        b_dep = pair - a_arr
+        if a_arr and b_dep <= dep_set and b_dep:
+            a, b = sorted(pair)
+            if result["weather"] == "Instrument":
+                result["paired_ops"].append((
+                    "rt_legal", "MIXED", OFFICIAL,
+                    f"{a} + {b} landing+departure (Instrument): not authorized "
+                    "as simultaneous - sequenced normally instead "
+                    "(JO 7110.65 par. 5-8-5)."))
+            else:
+                result["paired_ops"].append((
+                    "rt_legal", "MIXED", OFFICIAL,
+                    f"{a} + {b} landing+departure (Visual/Marginal): authorized "
+                    "as Simultaneous Same Direction Operation "
+                    "(JO 7110.65 par. 3-8-3)."))
+
+    # OPPOSITE DIRECTION - the head-to-head config, one physical runway.
+    if result["flow_key"] == "H2H":
+        result["paired_ops"].append((
+            "rt_class", "OPPOSITE DIRECTION", OFFICIAL,
+            "Land 33L / Depart 15R (head-to-head): opposite-direction "
+            "operations on one runway, 3-4 min by weight category "
+            "(JO 7110.65 par. 3-9-6)."))
+
+    # CROSSING, published LAHSO point - "landing holds short" table, so the
+    # holding runway must itself be an active ARRIVAL.
+    for holding_rwy, crossed_label, triggers in LAHSO_HOLD_SHORT:
+        if holding_rwy in arr_set and triggers & used:
+            # WORDING FIXED 2026-08-06: was "simultaneous traffic on X/Y" for the
+            # 2-runway rows (9/27, 15L/33R) - checked against a 56k-combo sweep of
+            # evaluate() and the two runways in each of those pairs NEVER appear
+            # active together (they are opposite ends of the same physical strip,
+            # so only one direction is ever in use at a time). "Simultaneous" was
+            # never literally true; the real trigger is "either one".
+            trig_text = ("any traffic on runway " + next(iter(triggers))
+                         if len(triggers) == 1
+                         else "traffic on either " + " or ".join(sorted(triggers)))
+            result["paired_ops"].append((
+                "rt_class", "CROSSING", OFFICIAL,
+                f"{holding_rwy} holds short of {crossed_label} during "
+                f"{trig_text} (FAA NTAP LAHSO)."))
+
+    # CROSSING, no published LAHSO point - only the 2 named physical
+    # crossings KBOS documents this way, not a general geometry scan.
+    for rwy_a, rwy_b in GENERIC_CROSSINGS:
+        if rwy_a in used and rwy_b in used:
+            result["paired_ops"].append((
+                "rt_class", "CROSSING", OFFICIAL,
+                f"{rwy_a} crosses {rwy_b}: no published hold-short point, "
+                "aircraft wait for the intersection to clear "
+                "(JO 7110.65 par. 3-9-8/3-10-4)."))
+
+
 # ---------------------------------------------------------------------------
 # Rendering - a list of (text, tag) lines shared by the GUI and the selftest.
 # Tag names map to colors in the GUI; the selftest prints plain text.
@@ -2629,6 +2768,15 @@ def render(result):
         add("=== RUNWAY ELIGIBILITY ===", "h1")
         for text, tag in result["eligibility"]:
             add(f"  {text}" if text else "", tag)
+        add()
+
+    if result["paired_ops"]:
+        add("=== PAIRED RUNWAY OPERATIONS ===", "h1")
+        for i, (tag, label, confidence, text) in enumerate(result["paired_ops"]):
+            if i:
+                add()
+            prefix = f"[{label}] {confidence} " if label else ""
+            add(f"  {prefix}{text}", tag)
         add()
 
     if result["night_notes"]:
@@ -3783,6 +3931,84 @@ SELFTEST_SCENARIOS = [
          ("15L", "Arr (limited)"): ("No", "runway size",
                                      "P yes / T B varies / R N W C no"),
      }}),
+
+    # --- STEP 6 / Pendencia 7 - PAIRED RUNWAY OPERATIONS (added 2026-08-06) ---
+    # Wind values reused from already-existing scenarios above (F1, O3, F10,
+    # F4, F6) rather than invented, per the same principle as every S-prefixed
+    # addition here: the wind that produces the configuration was already
+    # measured once, re-deriving it risks a value that quietly stops matching.
+    # Reachability of each branch was swept against evaluate() directly before
+    # writing these - see the plan notes for the sweep that ruled out "4L
+    # holds short of 15L-33R" (LAHSO_HOLD_SHORT row 1): 4L never appears in
+    # arr_rwys paired with 15L or 33R under ANY wind/weather combination this
+    # engine can produce (checked 0-359 deg, thunderstorm override included),
+    # so that row has no reachable scenario - not a gap in testing, the row
+    # itself is inert under current app inputs, kept only because the source
+    # (FAA NTAP LAHSO) documents it as real.
+    ("S1 NE Visual: parallel dep + simultaneous dep + generic crossing "
+     "(same wind as F1)", 14, 30, 40, 8, None, None, None, "Dry", "Good", False,
+     {"paired_ops": [("muted", None),
+                      ("rt_noise", "DUAL DEPARTURE"),
+                      ("rt_noise", "SIMULTANEOUS DEPARTURE"),
+                      ("rt_class", "CROSSING")]}),
+    ("S2 Override 118/25kt: 9+14 simultaneous dep + 15R LAHSO "
+     "(same wind as O3)", 14, 0, 118, 25, None, None, None, "Dry", "Good", True,
+     {"paired_ops": [("muted", None),
+                      ("rt_noise", "SIMULTANEOUS DEPARTURE"),
+                      ("rt_class", "CROSSING")]}),
+    ("S3 SW Visual: dual dep + MIXED (Visual/Marginal) + 2 LAHSO rows "
+     "(same wind as F4)", 14, 30, 220, 10, None, None, None, "Dry", "Good", False,
+     {"paired_ops": [("muted", None),
+                      ("rt_noise", "DUAL DEPARTURE"),
+                      ("rt_legal", "MIXED"),
+                      ("rt_class", "CROSSING"),
+                      ("rt_class", "CROSSING")]}),
+    ("S4 SW Instrument: MIXED (Instrument) only, no dual dep/LAHSO - 22R "
+     "alone on departure (same wind as F6)", 14, 30, 220, 15, None, 800, 2,
+     "Dry", "Good", False,
+     {"paired_ops": [("muted", None), ("rt_legal", "MIXED")]}),
+    ("S5 H2H night: OPPOSITE DIRECTION (same wind as F10)", 2, 0, 60, 12,
+     None, None, None, "Dry", "Good", False,
+     {"paired_ops": [("muted", None), ("rt_class", "OPPOSITE DIRECTION")]}),
+    ("S6 SE Visual: 9+14 simultaneous dep + 15R LAHSO, non-override path "
+     "(same wind as F9)", 14, 0, 125, 25, None, None, None, "Dry", "Good", False,
+     {"paired_ops": [("muted", None),
+                      ("rt_noise", "SIMULTANEOUS DEPARTURE"),
+                      ("rt_class", "CROSSING")]}),
+    ("S7 guard: thunderstorm override + unknown wind direction -> paired_ops "
+     "falls back to NO_CONFIG_MESSAGE, same guard as eligibility", 14, 0,
+     None, 20, None, None, None, "Dry", "Good", True,
+     {"paired_ops": [(None, None)]}),
+
+    # --- S8-S11, added 2026-08-06: 4 reachable branches the first pass (S1-S7)
+    # never exercised, found by re-sweeping evaluate() and cross-checking
+    # against what S1-S7 actually covered. All 4 reuse wind already approved
+    # elsewhere in this file (F2/F7/O2), or a minimal variant of it, same
+    # principle as S1-S7.
+    ("S8 NW Visual: generic crossing 33Lx27, the only flow S1-S7 never "
+     "touched (same wind as F7)", 14, 30, 300, 10, None, None, None,
+     "Dry", "Good", False,
+     {"paired_ops": [("muted", None), ("rt_class", "CROSSING")]}),
+    ("S9 NE Marginal: DUAL DEPARTURE and MIXED firing together for the SAME "
+     "pair (4L/4R) - unreachable in NE Visual (S1), where 4L+4R arrive "
+     "together and MIXED's b_dep side is empty (same wind as F2)", 14, 30,
+     40, 8, None, 2000, 5, "Dry", "Good", False,
+     {"paired_ops": [("muted", None), ("rt_noise", "DUAL DEPARTURE"),
+                      ("rt_noise", "SIMULTANEOUS DEPARTURE"),
+                      ("rt_legal", "MIXED"), ("rt_class", "CROSSING")]}),
+    ("S10 SE override, 125deg/5kt + thunderstorm + Instrument: 15R/15L is "
+     "the one parallel pair with zero coverage in S1-S9 - DUAL DEPARTURE "
+     "and MIXED both fire (swept 0-359deg to find this; same heading as F9, "
+     "thunderstorm flips the flow from documented SE to OVERRIDE)", 0, 0,
+     125, 5, None, 800, 2, "Dry", "Good", True,
+     {"paired_ops": [("muted", None), ("rt_noise", "DUAL DEPARTURE"),
+                      ("rt_legal", "MIXED")]}),
+    ("S11 NW override, 320deg/25kt + thunderstorm + Instrument: 33L/33R "
+     "DUAL DEPARTURE and MIXED, seen manually while measuring O1/O2 for the "
+     "plan but never asserted (same wind as O2)", 14, 0, 320, 25, None, 200,
+     0.5, "Dry", "Good", True,
+     {"paired_ops": [("muted", None), ("rt_noise", "DUAL DEPARTURE"),
+                      ("rt_legal", "MIXED")]}),
 ]
 
 
@@ -3968,6 +4194,15 @@ def selftest(verbose=False):
             # direction, so none of them ever exercised this code path.
             check("wind_notes_count", len(result["wind_notes"]),
                   expect["wind_notes_count"])
+        if "paired_ops" in expect:
+            # Structured, like every other assertion here: WHICH categories
+            # fired, in order - never the sentence text (a wording change must
+            # not be able to hide a logic bug). (tag, label) pairs, same
+            # shape principle as elig/role_fill above.
+            check("paired_ops",
+                  [(tag, label) for tag, label, _conf, _text
+                   in result["paired_ops"]],
+                  expect["paired_ops"])
 
         status = "FAIL" if errors else "PASS"
         print(f"[{status}] {name}")
